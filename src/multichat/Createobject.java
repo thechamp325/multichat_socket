@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Calendar;
 
 import org.json.simple.JSONArray;
@@ -21,6 +22,8 @@ public class Createobject
     @SuppressWarnings("unchecked")
     public void cobj(String pack,String name,int read_status)//read_status=1 for read msg and 0 for unread msg
     { 
+        JSONObject sender = new JSONObject();// if sender sends data first time create his key
+
     	
     	String msg[] = {"","","",""};
     	int j=0;
@@ -31,13 +34,24 @@ public class Createobject
     		}
     		msg[j]=msg[j]+String.valueOf(pack.charAt(i));
     	}
-    	System.out.println("msg[3]is "+msg[3]);
-        JSONObject sender = new JSONObject();// if sender sends data first time create his key
+//    	if(read(msg[3],name)!=null) {
+//    		Calendar cal = Calendar.getInstance();
+//            String date_time=cal.getTime().toString();
+//		JSONObject msgs=read(msg[3],name);
+//		msgs.put(date_time, msg[2]);
+//        sender.put(msg[3], msgs);
+//        System.out.println(sender);
+//    	}
+
+//    	System.out.println("msg[3]is "+msg[3]);
+    	if(true) {
         JSONObject putmsg = new JSONObject();
         Calendar cal = Calendar.getInstance();
         String date_time=cal.getTime().toString();
         putmsg.put(date_time, pack);
         sender.put(msg[3], putmsg);
+        System.out.println(sender);
+    	}
  
          
 //        JSONObject employeeObject = new JSONObject(); 
@@ -53,13 +67,12 @@ public class Createobject
 //        employeeObject2.put("employee", employeeDetails2);
          
         //Add employees to list
-        JSONArray employeeList = new JSONArray();
-        employeeList.add(sender);
+        
 //        employeeList.add(employeeObject2);
         
         //Write JSON file
         try  {
-                Files.write(Paths.get(name+".json"), employeeList.toJSONString().getBytes());
+                Files.write(Paths.get(name+".json"), sender.toJSONString().getBytes(),StandardOpenOption.APPEND);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -93,21 +106,20 @@ public class Createobject
     
     
     
-    public String read(String sender,String name)
+    public JSONObject read(String sender,String name)
     {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
          
-        try (FileReader reader = new FileReader(name+".json"))
-        {
+        try{
+        	 FileReader reader = new FileReader(name+".json");
             //Read JSON file
             Object obj = jsonParser.parse(reader);
- 
-            JSONArray employeeList = (JSONArray) obj;
-            System.out.println(employeeList);
-             
+            JSONObject employeeList = (JSONObject) obj;
+//            System.out.println(employeeList);
+             JSONObject msgs=(JSONObject)employeeList.get(sender);
+             return msgs;
             //Iterate over employee array
-            employeeList.forEach( emp -> parseEmployeeObject( (JSONObject) emp ) );
  
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -116,7 +128,10 @@ public class Createobject
         } catch (ParseException e) {
             e.printStackTrace();
         }
-		return name;
+        catch(Exception e) {
+        	
+        }
+		return null;
     }
  
     private void parseEmployeeObject(JSONObject employee) 

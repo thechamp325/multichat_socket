@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.Vector;
 
+import org.json.simple.JSONObject;
+
 public class MultiThreadChatClient implements Runnable {			// now here we use 2nd method for thread implementation
 public static Scanner s = new Scanner(System.in);
   private static Socket clientSocket = null;
@@ -76,6 +78,11 @@ public static Scanner s = new Scanner(System.in);
     }
     
   }
+  
+  
+  
+  
+  
 
   public void run() {			// this function is outside psvm but inside MultiThreadChatClient class ------------------ note
     String responseLine;        //read received msg
@@ -127,6 +134,9 @@ public static Scanner s = new Scanner(System.in);
 
   }
   
+  
+  
+  
   public static void establishconn() {
 	  System.out.println("Select:\n1.group chat\n2.personal chat");
 	  System.out.println("then Enter destination name:");
@@ -141,6 +151,8 @@ public static Scanner s = new Scanner(System.in);
 	}
 	  
   }
+  
+  
   
   
   public static String pack(String sendmsgtoserver ) {
@@ -166,8 +178,14 @@ public static Scanner s = new Scanner(System.in);
   }
   
   
+  
+  
   public static void setdestination() {
 	  establishconn();
+	  if(c.read(destination,name)!=null) {
+			JSONObject msgs=c.read(destination,name);
+			System.out.println("msgs");
+		}
       os.println(pack(name+"connected to"+destination));
       if(choice==1) {
       prevgroups.add(destination);
@@ -185,6 +203,8 @@ public static Scanner s = new Scanner(System.in);
       }
 	  System.out.println("Enter the message fom client");
   }
+  
+  
   
   
   public static void sendmsg() {
@@ -208,6 +228,7 @@ public static Scanner s = new Scanner(System.in);
 			
 			if(dest.equals("2")) {
 				setdestination();
+				
 			}
 			else {
 				if(prevdestination.indexOf(dest) != -1) {
@@ -217,6 +238,10 @@ public static Scanner s = new Scanner(System.in);
 				else if(prevgroups.indexOf(dest) != -1) {
 					choice=1;
 					destination=prevgroups.get(prevgroups.indexOf(dest));
+				}
+				if(c.read(destination,name)!=null) {
+					JSONObject msgs=c.read(destination,name);
+					System.out.println(msgs);
 				}
 				System.out.println("Enter your msg");
 			}
