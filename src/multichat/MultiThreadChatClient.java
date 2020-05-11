@@ -9,26 +9,35 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.Vector;
 
+import javax.sound.sampled.LineUnavailableException;
+
 import org.json.simple.JSONObject;
 
+import audiotransfer.threads;
+
+import java.util.Arrays;
+import java.util.List;
+
 public class MultiThreadChatClient implements Runnable {			// now here we use 2nd method for thread implementation
-public static Scanner s = new Scanner(System.in);
+  public static Scanner s = new Scanner(System.in);
+  
   private static Socket clientSocket = null;
   private static PrintStream os = null;
   private static DataInputStream is = null;
+  private static BufferedReader inputLine = null;
+
+  
   private static String name = null;
   public static String destination=null;
   private static Vector<String> prevgroups = new Vector<String>();
   public static Vector<String> prevdestination= new Vector<String>();;
-
   public static int choice = 0;
-
-  private static BufferedReader inputLine = null;
   private static boolean closed = false;
   private static Createobject c = null;
   
+  
+  //main method
   public static void main(String[] args) {
-
     int portNumber = 2222;
     String host = "localhost";
 
@@ -53,7 +62,8 @@ public static Scanner s = new Scanner(System.in);
           + host);
     }
 
-    if (clientSocket != null && os != null && is != null) {
+    if (clientSocket != null && os != null && is != null) 
+    {
       try {
     	c=new Createobject();
     	sendname();                                            //sends name of client to server
@@ -62,8 +72,7 @@ public static Scanner s = new Scanner(System.in);
         	
         	if(destination==null) {
         		setdestination();	                            // sends destination to server
-        	}
-        	else {
+        	}else {
         		sendmsg();			                           // send msg to server while client is sending msgs is true 
         	}
         }
@@ -92,27 +101,22 @@ public static Scanner s = new Scanner(System.in);
 //      System.out.println("msg received at "+name);				
       
       
-      String msg[] = {"","","",""};
-      int j=0;
-     for(int i=0;i<responseLine.length();i++) {
-    	 if(String.valueOf(responseLine.charAt(i)).equals("|")) {
-    		 j++;
-    		 continue;
-    	 }
-    	 msg[j]=msg[j]+String.valueOf(responseLine.charAt(i));
-     
-      }
+      String msg[] = unpack(responseLine);
      
      
      
-      if((destination!=null&&destination.equals(msg[3])&&name.equals(msg[1])&&(!name.equals(msg[3])))||name.equals(msg[3])) {
+      if((destination!=null&&destination.equals(msg[3])&&name.equals(msg[1])&&(!name.equals(msg[3])))) {
     	  System.out.println(msg[3]+">>"+msg[2]);	// print msg to console of client if their boths destination or name is same 
-    	  c.cobj(responseLine,name,1); 
+    	  c.cobj(responseLine,msg[3],msg[1],name,1); 
+      }
+      else if(name.equals(msg[3])) {
+    	  System.out.println(msg[3]+">>"+msg[2]);	// print msg to console of sender 
+    	  c.cobj(responseLine,msg[3],msg[1],name,1); 
       }
       else {
     	  try {
 //         System.out.println(msg[3]+">>"+msg[2]);	// print msg to console of client if their boths destination or name is same 
-    	  c.cobj(responseLine,name,0); // write msg to json array
+    		  c.cobj(responseLine,msg[3],msg[1],name,1); ; // write msg to json array
     	  }
     	  catch(Exception e) {
     		  e.printStackTrace();
@@ -138,7 +142,7 @@ public static Scanner s = new Scanner(System.in);
   
   
   public static void establishconn() {
-	  System.out.println("Select:\n1.group chat\n2.personal chat");
+	  System.out.println("Select:\n1.group chat\n2.personal chat\n3.Voice call");
 	  System.out.println("then Enter destination name:");
 	try {
 		choice = Integer.valueOf(inputLine.readLine().trim());
@@ -162,6 +166,21 @@ public static Scanner s = new Scanner(System.in);
 		return packs;
   }
   
+  public static String[] unpack(String responseLine ) {
+	  
+	  String msg[] = {"","","",""};
+      int j=0;
+      for(int i=0;i<responseLine.length();i++) {
+    	 if(String.valueOf(responseLine.charAt(i)).equals("|")) {
+    		 j++;
+    		 continue;
+    	 }
+    	 msg[j]=msg[j]+String.valueOf(responseLine.charAt(i));
+     
+      }
+      return msg;
+}
+  
   
   
   public static void sendname() {
@@ -183,8 +202,13 @@ public static Scanner s = new Scanner(System.in);
   public static void setdestination() {
 	  establishconn();
 	  if(c.read(destination,name)!=null) {
-			JSONObject msgs=c.read(destination,name);
-			System.out.println("msgs");
+		  System.out.println("---Printing previous messages---");
+			List<String []>msgs= c.read(destination,name);
+			int i=0;
+			while(i<msgs.size()) {
+			System.out.println(Arrays.toString(msgs.get(i)));
+			i++;
+			}
 		}
       os.println(pack(name+"connected to"+destination));
       if(choice==1) {
@@ -200,6 +224,14 @@ public static Scanner s = new Scanner(System.in);
     		  e.printStackTrace();
     	  }
 
+      }
+      else if(choice==3) {
+    	  try {
+			threads obj=new threads(name,destination,clientSocket);
+		} catch (IOException | LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
       }
 	  System.out.println("Enter the message fom client");
   }
@@ -240,8 +272,12 @@ public static Scanner s = new Scanner(System.in);
 					destination=prevgroups.get(prevgroups.indexOf(dest));
 				}
 				if(c.read(destination,name)!=null) {
-					JSONObject msgs=c.read(destination,name);
-					System.out.println(msgs);
+					List<String []>msgs= c.read(destination,name);
+					int i=0;
+					while(i<msgs.size()) {
+					System.out.println(Arrays.toString(msgs.get(i)));
+					i++;
+					}
 				}
 				System.out.println("Enter your msg");
 			}

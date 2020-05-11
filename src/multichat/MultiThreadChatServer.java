@@ -1,5 +1,9 @@
 package multichat;
+
+import audiotransfer.*;
+
 import java.io.DataInputStream;
+
 import java.io.PrintStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -15,7 +19,7 @@ public class MultiThreadChatServer {
 //    static Vector<ClientHandler> ar = new Vector<>(); 
 	Grouplist grouplist = new Grouplist();
 	
-    private static ServerSocket serverSocket = null;
+    public static ServerSocket serverSocket = null;
     private static Socket clientSocket = null;
     private static Vector<Vector<String>> groups = new Vector<Vector<String>>();
 
@@ -141,6 +145,12 @@ Grouplist grouplist = new Grouplist();
           
           else if(choice==2) {
         	  personalchat(line);
+          }
+          else if(choice==3) {
+        	  
+			//new sockets(serverSocket).start();
+			// call read and write here instead of this
+			
           }
         }
 
