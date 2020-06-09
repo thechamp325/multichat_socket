@@ -158,14 +158,15 @@ class Read
 	  static Vector <String>type=new Vector<String>();
 	  static Vector <String>desti=new Vector<String>();
 	  static Vector <Vector>group=new Vector<Vector>();
-		ServerSocket Ssocket;
+		Socket Ssocket;
 		sockets()
 		{
 			
 		}
-		public sockets(ServerSocket socket)
+		public sockets(Socket name,Socket dest)
 		{
-			Ssocket=socket;
+			socket.add(name);
+			socket.add(dest);
 		}
 		public void run()
 		{
@@ -174,13 +175,16 @@ class Read
 			Socket socket1;
 			try {
 				System.out.println("in sockets run");
-			socket.add(Ssocket.accept());
+//			socket.add(Ssocket.accept());
 			System.out.println(i);
 			socket1=(Socket)socket.get(i);
 			String s=(new BufferedReader(new InputStreamReader(socket1.getInputStream())).readLine());
+			System.out.println("here");
 			String a[]=s.split("@");
+			System.out.println(s);
 			name.add(a[0]);
 			desti.add(a[1]);
+			i=0;
 			System.out.println((String)name.get(i)+" is connected");
 			new Read((Socket)socket.get(i),(String)name.get(i),(String)desti.get(i));
 			} catch (IOException e) {

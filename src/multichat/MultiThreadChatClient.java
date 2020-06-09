@@ -23,7 +23,7 @@ public class MultiThreadChatClient implements Runnable {			// now here we use 2n
   
   private static Socket clientSocket = null;
   private static PrintStream os = null;
-  private static DataInputStream is = null;
+  public static DataInputStream is = null;
   private static BufferedReader inputLine = null;
 
   
@@ -62,14 +62,12 @@ public class MultiThreadChatClient implements Runnable {			// now here we use 2n
           + host);
     }
 
-    if (clientSocket != null && os != null && is != null) 
-    {
+    if (clientSocket != null && os != null && is != null)  {
       try {
     	c=new Createobject();
     	sendname();                                            //sends name of client to server
         new Thread(new MultiThreadChatClient()).start();// create new thread
         while (!closed) {		
-        	
         	if(destination==null) {
         		setdestination();	                            // sends destination to server
         	}else {
@@ -215,19 +213,19 @@ public class MultiThreadChatClient implements Runnable {			// now here we use 2n
       prevgroups.add(destination);
       }
       else if(choice==2) {
-    	  System.out.println("Entered choice 2");
+    	  System.out.println("destination added to prev destination");
     	  try {
           prevdestination.add(destination);
-    	  System.out.println("No Problem here"+prevdestination.get(0));
+//    	  System.out.println("No Problem here"+prevdestination.get(0));
     	  }
     	  catch(Exception e) {
     		  e.printStackTrace();
     	  }
 
       }
-      else if(choice==3) {
+      else if(choice==3) { //this is for calling so call threads of threads.java to connect to call
     	  try {
-			threads obj=new threads(name,destination,clientSocket);
+			threads obj=new threads(name,destination,clientSocket,is);
 		} catch (IOException | LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

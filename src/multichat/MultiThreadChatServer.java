@@ -94,6 +94,7 @@ Grouplist grouplist = new Grouplist();
                                         // using the functions of Thread class...... so these r just formal parameters
   private PrintStream os = null;      // OutputStreams are meant for binary data. Writers (including PrintWriter) are meant for text data
   private Socket clientSocket = null;
+  private Socket destinationSocket=null;
   private final clientThread[] threads;
   private int maxClientsCount;
   private String name = null;
@@ -112,7 +113,15 @@ Grouplist grouplist = new Grouplist();
   public void run() {
     int maxClientsCount = this.maxClientsCount;     // again intitialiization ???
     clientThread[] threads = this.threads;
-
+    Socket destinationSocket=null;
+    for (int i = 0; i < maxClientsCount; i++) {   // for every client go to next line except the current one
+        if (threads[i] != null && threads[i] != this&&threads[i].name==this.destination) {
+        	this.destinationSocket=threads[i].clientSocket;
+        	destinationSocket=this.destinationSocket;
+//          threads[i].os.println("");
+        }
+      }
+    
     try {
         is = new DataInputStream(clientSocket.getInputStream());
         os = new PrintStream(clientSocket.getOutputStream());
@@ -146,9 +155,9 @@ Grouplist grouplist = new Grouplist();
           else if(choice==2) {
         	  personalchat(line);
           }
-          else if(choice==3) {
+          else if(choice==3) {  //call voice call server program 
         	  
-			//new sockets(serverSocket).start();
+			new sockets(this.clientSocket,this.destinationSocket).start();
 			// call read and write here instead of this
 			
           }

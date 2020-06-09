@@ -19,12 +19,13 @@ public class threads
 	 String name;
 	 DataInputStream dataIn = null;
 	 SourceDataLine inSpeaker = null;
-	 public threads(String s,String s1,Socket socket) throws UnknownHostException, IOException, LineUnavailableException
-	 { 
-	       
+	 public threads(String s,String s1,Socket socket,DataInputStream is) throws UnknownHostException, IOException, LineUnavailableException
+	 { 	this.socket =socket;
+		 dataIn=is;
 	        name=s;
 		 	st=s+"@"+s1;
 			PrintWriter pr=new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			System.out.println(st);
 			pr.println(st); 
 			pr.flush();
 			write();
@@ -41,7 +42,6 @@ public class threads
 				try {  
 					input = socket.getInputStream();
 					SourceDataLine inSpeaker = null;
-					DataInputStream	dataIn = new DataInputStream(input);
 					AudioFormat af = new AudioFormat(8000.0f,8,1,true,false);
 					DataLine.Info info = new DataLine.Info(SourceDataLine.class, af);
 					inSpeaker = (SourceDataLine)AudioSystem.getLine(info);
