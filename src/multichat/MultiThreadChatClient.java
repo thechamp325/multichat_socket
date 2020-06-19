@@ -1,5 +1,6 @@
 package multichat;
 import java.io.DataInputStream;
+import audiotransfer.threads2;
 import java.io.PrintStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -96,7 +97,7 @@ public class MultiThreadChatClient implements Runnable {			// now here we use 2n
 
     try {
       while ((responseLine = is.readLine()) != null) {// this msg is from Server cuz 'is' is used for reading msg 
-//      System.out.println("msg received at "+name);				
+      System.out.println("msg received at "+name+" msg= "+responseLine);	
       
       
       String msg[] = unpack(responseLine);
@@ -225,7 +226,7 @@ public class MultiThreadChatClient implements Runnable {			// now here we use 2n
       }
       else if(choice==3) { //this is for calling so call threads of threads.java to connect to call
     	  try {
-			threads obj=new threads(name,destination,clientSocket,is);
+			threads2 obj=new threads2(name,destination);
 		} catch (IOException | LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

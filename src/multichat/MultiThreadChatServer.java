@@ -156,8 +156,19 @@ Grouplist grouplist = new Grouplist();
         	  personalchat(line);
           }
           else if(choice==3) {  //call voice call server program 
+        	  System.out.println("Calling "+this.destination);
+//        	  for (int i = 0; i < maxClientsCount; i++) {
+//        		  if (threads[i] != null && (threads[i].name.equals(this.destination) || threads[i].name.equals(this.name))) {
+//                    threads[i].os.println(line+this.name+"is calling you Enter 1 to answer:");
+//                    String ans;
+//                    ans=threads[i].is.readLine();
+//                    this.os.println(this.destination+" answered "+ans);
+//
+//                  }
+//                }
         	  
-			new sockets(this.clientSocket,this.destinationSocket).start();
+        	  
+//			new sockets(this.clientSocket,this.destinationSocket).start();
 			// call read and write here instead of this
 			
           }
